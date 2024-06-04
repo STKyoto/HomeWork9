@@ -2,6 +2,7 @@ package CustomCollections;
 
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MyHashMap<K, V> {
         private int size;
@@ -9,14 +10,14 @@ public class MyHashMap<K, V> {
         private Entry<K, V>[] array = new Entry[DEFAULT_SIZE];
 
         public void put(K key, V value){
-            int code = calculateIndex(key.hashCode());
+            int code = calculateIndex(key);
             Entry<K, V> newEntry = new Entry<>(key, value);
             if (array[code] == null){
                 array[code] = newEntry;
             }else{
                 Entry<K, V> current = array[code];
                 while (current != null){
-                    if (current.key.equals(key)){
+                    if (Objects.equals(current.key, key)){
                         current.value = value;
                         break;
                     }
@@ -28,10 +29,10 @@ public class MyHashMap<K, V> {
         }
 
         public V get(K key){
-            int code = calculateIndex(key.hashCode());
+            int code = calculateIndex(key);
             Entry<K, V> current = array[code];
             while (current != null){
-                if (current.key.equals(key)){
+                if (Objects.equals(current.key, key)){
                     return current.value;
                 }
                 current = current.next;
@@ -39,7 +40,13 @@ public class MyHashMap<K, V> {
             return null;
         }
 
-        private int calculateIndex(int hashCode) {
+        private int calculateIndex(K key) {
+            int hashCode;
+            if (key == null){
+                hashCode = "null".hashCode();
+            }else{
+                hashCode = key.hashCode();
+            }
             return Math.abs(hashCode % array.length);
         }
 
@@ -55,11 +62,11 @@ public class MyHashMap<K, V> {
         }
 
         public void remove(K key){
-            int code = calculateIndex(key.hashCode());
+            int code = calculateIndex(key);
             Entry<K, V> current = array[code];
             Entry<K, V> previous = null;
             while (current != null){
-                if (current.key.equals(key)){
+                if (Objects.equals(current.key, key)){
                     if (previous == null){
                         array[code] = current.next;
                     }else {
@@ -84,3 +91,4 @@ public class MyHashMap<K, V> {
         }
     }
 }
+
