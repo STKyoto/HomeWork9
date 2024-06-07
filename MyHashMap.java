@@ -1,6 +1,7 @@
 package CustomCollections;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -10,22 +11,42 @@ public class MyHashMap<K, V> {
         private Entry<K, V>[] array = new Entry[DEFAULT_SIZE];
 
         public void put(K key, V value){
-            int code = calculateIndex(key);
-            Entry<K, V> newEntry = new Entry<>(key, value);
-            if (array[code] == null){
-                array[code] = newEntry;
-            }else{
-                Entry<K, V> current = array[code];
-                while (current != null){
-                    if (Objects.equals(current.key, key)){
-                        current.value = value;
-                        break;
-                    }
-                    current = current.next;
-                }
-                current.next = newEntry;
+            if (size >= DEFAULT_SIZE){
+                resize();
             }
-            size++;
+                int code = calculateIndex(key);
+                Entry<K, V> newEntry = new Entry<>(key, value);
+                if (array[code] == null){
+                    array[code] = newEntry;
+                }else{
+                    Entry<K, V> current = array[code];
+                    while (current != null){
+                        if (Objects.equals(current.key, key)){
+                            current.value = value;
+                            break;
+                        }
+                        if (current.next == null) {
+                            break;
+                        }
+                        current = current.next;
+                    }
+                    current.next = newEntry;
+                }
+                size++;
+        }
+        public void resize(){
+            int newSize = DEFAULT_SIZE * 2;
+            Entry<K, V>[] newArray = new Entry[newSize];
+            for (Entry<K, V> entry : array){
+                while(entry != null){
+                    Entry<K, V> next = entry.next;
+                    int code = calculateIndex(entry.key);
+                    entry.next = newArray[code];
+                    newArray[code] = entry;
+                    entry = next;
+                }
+            }
+            array = newArray;
         }
 
         public V get(K key){
